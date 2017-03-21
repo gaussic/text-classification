@@ -74,7 +74,7 @@ public class NewsCategorizer {
         NewsCategorizer categorizer = new NewsCategorizer();
         MysqlConnector conn = new MysqlConnector();
 
-        List<Map<String, String>> newsList = conn.findUncategorized(300000, 300000);
+        List<Map<String, String>> newsList = conn.findUncategorized(300000, 300);
         for (Map<String, String> news : newsList) {
             String url = news.get("url");
             int id = Integer.parseInt(news.get("id"));

@@ -63,7 +63,7 @@ public class MysqlConnector {
         try {
             pstmt = conn.prepareStatement("select * from sogou_news.news where category = '其他' limit ?, ?");
             pstmt.setInt(1, startIndex);
-            pstmt.setInt(1, limit);
+            pstmt.setInt(2, limit);
             rSet = pstmt.executeQuery();
 
             List<Map<String, String>> newsList = new ArrayList<>();

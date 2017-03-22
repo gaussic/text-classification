@@ -1,10 +1,7 @@
 package utils;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by gaussic on 2017/3/20.
@@ -21,7 +18,7 @@ public class MysqlConnector {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             conn = DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3306/sogou_news?useSSL=false&useUnicode=true&characterEncoding=UTF-8 ",
+                    "jdbc:mysql://localhost:3306/sogou_news?useSSL=false&useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC",
                     "root",
                     "dzkang");
 
@@ -71,6 +68,44 @@ public class MysqlConnector {
                 Map<String, String> news = new HashMap<>();
                 news.put("id", rSet.getString("id"));
                 news.put("url", rSet.getString("url"));
+                newsList.add(news);
+            }
+            return newsList;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    // 随机从数据库中选取固定条数的数据
+    public List<Map<String, String>> selectRandomNews(String category, int number) {
+        try {
+            pstmt = conn.prepareStatement("select id from sogou_news.news where category = ?");
+            pstmt.setString(1, category);
+            rSet = pstmt.executeQuery();
+            List<Integer> ids = new ArrayList<>();
+            while(rSet.next()) {
+                ids.add(rSet.getInt(1));
+            }
+            Collections.shuffle(ids);
+
+            String sql = "select * from sogou_news.news where id in (" + Integer.toString(ids.get(0));
+            for (int i = 1; i < number; i++) {
+                sql +=", " + Integer.toString(ids.get(i));
+            }
+            sql += ")";
+            // System.out.println(sql);
+            pstmt = conn.prepareStatement(sql);
+            rSet = pstmt.executeQuery();
+
+            List<Map<String, String>> newsList = new ArrayList<>();
+            while(rSet.next()) {
+                Map<String, String> news = new HashMap<>();
+                news.put("id", rSet.getString("id"));
+                news.put("url", rSet.getString("url"));
+                news.put("title", rSet.getString("title"));
+                news.put("content", rSet.getString("content"));
+                news.put("category", rSet.getString("category"));
                 newsList.add(news);
             }
             return newsList;
@@ -131,14 +166,21 @@ public class MysqlConnector {
 
     public static void main(String[] args) {
         MysqlConnector conn = new MysqlConnector();
-        conn.readNewsCount();
-        List<Map<String, String>> newsList = conn.findUncategorized(1000, 1000);
-        System.out.println(newsList.size());
+//        conn.readNewsCount();
+//        List<Map<String, String>> newsList = conn.findUncategorized(1000, 1000);
+//        System.out.println(newsList.size());
+//        for (Map<String, String> news : newsList) {
+//            System.out.println(news.get("id") + "   " + news.get("url"));
+//        }
+
+        List<Map<String, String>> newsList = conn.selectRandomNews("汽车", 3);
         for (Map<String, String> news : newsList) {
-            System.out.println(news.get("id") + "   " + news.get("url"));
+            System.out.println(news.get("id") + "   " + news.get("url") + "   " + news.get("title") + "   " + news.get("category"));
         }
         conn.closeDatabase();
     }
+
+
 
 
 }

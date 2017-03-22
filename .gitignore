@@ -2,3 +2,5 @@
 target
 news.dat
 output_all.txt
+*.imi
+*.txt

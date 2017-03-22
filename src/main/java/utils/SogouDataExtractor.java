@@ -48,6 +48,6 @@ public class SogouDataExtractor {
 
     public static void main(String[] args) {
         SogouDataExtractor extractor = new SogouDataExtractor();
-        extractor.writeDataFile(3, 2, 1);
+        extractor.writeDataFile(5000, 500, 1000);
     }
 }

@@ -17,13 +17,13 @@ def read_data(filename, index=1):
         contents = [line.split('\t')[index] for line in lines]
         return contents, labels
     
-def get_words(data):
+def get_words(data, max_features):
     text = ''
     for line in data:
         text += line
     text = text.replace('\u3000', '').replace('\t', '').replace('\n', '')
     
-    counter = Counter(text[:]).most_common()
+    counter = Counter(text[:]).most_common(max_features)
     words, _ = zip(*counter)
     
     word_to_id = dict((c, i) for i, c in enumerate(words))

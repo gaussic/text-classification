@@ -17,6 +17,18 @@ def read_data(filename, index=1):
         contents = [line.split('\t')[index] for line in lines]
         return contents, labels
     
+def read_data_maxlen(filename, index, maxlen):
+    labels = []
+    contents = []
+    with open(filename, 'r', encoding='utf-8') as f:
+        for line in f:
+            labels.append(line.split('\t')[0])
+            content = line.split('\t')[index]
+            if len(content) > maxlen:
+                content = content[:maxlen]
+            contents.append(content)
+    return contents, labels
+    
 def get_words(data, max_features):
     text = ''
     for line in data:

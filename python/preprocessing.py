@@ -2,8 +2,6 @@ from collections import Counter
 import numpy as np
 from keras.preprocessing import sequence
 
-def hello():
-    print('hello')
 
 def read_data(filename, index=1):
     '''
@@ -111,12 +109,17 @@ def build_ngram_tokens(data, max_features, ngram_range=2):
     max_features = np.max(list(indice_token.keys())) + 1
     
     return token_indice, max_features
-    
 
 def pad_ngram_data(data, token_indice, maxlen, ngram_range=2):
     data = add_ngram(data, token_indice, ngram_range)
     return sequence.pad_sequences(data, maxlen=maxlen)
     
+def data_shuffle(X, Y):
+    arr = np.arange(len(X))
+    np.random.shuffle(arr)
+    X = X[arr]
+    Y = Y[arr]
+    return X, Y
 
 
         

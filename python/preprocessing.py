@@ -1,6 +1,7 @@
 from collections import Counter
 import numpy as np
 from keras.preprocessing import sequence
+import jieba
 
 
 def read_data(filename, index=1):
@@ -22,6 +23,7 @@ def read_data_maxlen(filename, index, maxlen):
         for line in f:
             labels.append(line.split('\t')[0])
             content = line.split('\t')[index]
+            content = ''.join([x for x in content if x.isalpha()])
             if len(content) > maxlen:
                 content = content[:maxlen]
             contents.append(content)
@@ -112,6 +114,9 @@ def build_ngram_tokens(data, max_features, ngram_range=2):
 
 def pad_ngram_data(data, token_indice, maxlen, ngram_range=2):
     data = add_ngram(data, token_indice, ngram_range)
+    
+
+    print(max(map(len, data)))
     return sequence.pad_sequences(data, maxlen=maxlen)
     
 def data_shuffle(X, Y):
@@ -122,12 +127,7 @@ def data_shuffle(X, Y):
     return X, Y
 
 
-        
-        
-        
-        
-        
-        
-        
-        
-        
+def segment(string, cut_all=False):
+    seg_list = jieba.cut(string, cut_all)
+    return [word for word in list(seg_list) if word.isalpha() and len(word) > 1]
+  

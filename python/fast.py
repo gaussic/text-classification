@@ -13,13 +13,13 @@ from keras.preprocessing import sequence
 
 # In[2]:
 
-ngram_range = 1
+ngram_range = 2
 max_features = 5000
 batch_size = 64
 embedding_dims = 128
-epochs = 10
-maxlen = 400
-index = 3
+epochs = 100
+maxlen = 50
+index = 1
 
 
 # In[3]:
@@ -58,11 +58,13 @@ print(max(map(len, X_val)))
 
 # In[8]:
 
+
 if ngram_range > 1:
+    maxlen  = 100
     token_indice, max_features = ps.build_ngram_tokens(X_train, max_features, ngram_range)
-    X_train = ps.pad_ngram_data(X_train, token_indice, maxlen*2, ngram_range)
-    X_test = ps.pad_ngram_data(X_test, token_indice, maxlen*2, ngram_range)
-    X_val = ps.pad_ngram_data(X_val, token_indice, maxlen*2, ngram_range)
+    X_train = ps.pad_ngram_data(X_train, token_indice, maxlen, ngram_range)
+    X_test = ps.pad_ngram_data(X_test, token_indice, maxlen, ngram_range)
+    X_val = ps.pad_ngram_data(X_val, token_indice, maxlen, ngram_range)
 else:
     X_train = sequence.pad_sequences(X_train, maxlen)
     X_test = sequence.pad_sequences(X_test, maxlen)
@@ -78,9 +80,9 @@ y_val = np.array(y_val)
 
 # In[10]:
 
-X_train, Y_train = ps.data_shuffle(X_train, y_train)
-X_test, Y_test = ps.data_shuffle(X_test, y_test)
-X_val, Y_val = ps.data_shuffle(X_val, y_val)
+X_train, y_train = ps.data_shuffle(X_train, y_train)
+X_test, y_test = ps.data_shuffle(X_test, y_test)
+X_val, y_val = ps.data_shuffle(X_val, y_val)
 
 
 # In[11]:

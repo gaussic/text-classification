@@ -16,7 +16,7 @@ public class NewsCategorizer {
             "http://finance", "财经",
             "http://money", "财经",
             "http://biz", "财经",
-            "http://1688.tech", "财经",
+            "http://1688.tech", "科技",
             "http://taobao.finance", "财经",
             "http://alibaba.finance", "财经",
             "http://it", "科技",
@@ -56,7 +56,6 @@ public class NewsCategorizer {
             "http://eladies", "时尚",
             "http://lady", "时尚",
             "http://luxury", "时尚",
-            "http://lady", "时尚",
             "http://fashion", "时尚",
             "http://taobao.lady", "时尚"
     };

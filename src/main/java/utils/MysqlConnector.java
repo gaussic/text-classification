@@ -18,9 +18,9 @@ public class MysqlConnector {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             conn = DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3306/sogou_news?useSSL=false&useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC",
+                    "jdbc:mysql://121.40.122.102:3306/sogou_news?useSSL=false&useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC",
                     "root",
-                    "dzkang");
+                    "shuces1006");
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -43,7 +43,7 @@ public class MysqlConnector {
     // 插入一条数据
     public void insertNews(Map<String, String> news) {
         try {
-            pstmt = conn.prepareStatement("insert into sogou_news.news values (DEFAULT , ?, ?, ?, ?, DEFAULT )");
+            pstmt = conn.prepareStatement("insert into sogou_news.news values (DEFAULT , ?, ?, ?, ?, DEFAULT, DEFAULT, DEFAULT )");
             pstmt.setString(1, news.get("url"));
             pstmt.setString(2, news.get("docno"));
             pstmt.setString(3, news.get("title"));
@@ -126,6 +126,19 @@ public class MysqlConnector {
             System.out.println(url + "   " + category);
         }
 
+    }
+
+    // 更新新闻内容
+    public void updateNews(String title, String content, String docno) {
+        try {
+            pstmt = conn.prepareStatement("update sogou_news.news set title = ?, content = ? where docno = ?");
+            pstmt.setString(1, title);
+            pstmt.setString(2, content);
+            pstmt.setString(3, docno);
+            pstmt.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     // 文档是否已存在

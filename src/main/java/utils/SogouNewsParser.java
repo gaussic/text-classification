@@ -45,7 +45,7 @@ public class SogouNewsParser {
         }
     }
 
-    public static void main(String[] args) throws Exception {
+    public static void tt() throws Exception {
         MysqlConnector conn = new MysqlConnector();
         SogouNewsParser parser = new SogouNewsParser();
 
@@ -53,21 +53,21 @@ public class SogouNewsParser {
         FileInputStream fis = new FileInputStream("news.dat");
         BufferedReader br = new BufferedReader(new InputStreamReader(fis));
         String strLine;
-        String newsXml = "";
+        StringBuilder newsXml = new StringBuilder();
         int cnt = 0;
         int totalNum = 0;
         while ((strLine = br.readLine()) != null) {
-            newsXml += strLine + "\n";
+            newsXml.append(strLine).append("\n");
             if (cnt == 5) {
                 cnt = 0;
                 try {
-                    Map<String, String> news = parser.parseNews(newsXml.replaceAll("&", "&amp;"));
+                    Map<String, String> news = parser.parseNews(newsXml.toString().replaceAll("&", "&amp;"));
                     if(news != null)
                         conn.insertNews(news);
                 } catch (Exception e) {
                     System.out.println("插入失败。");
                 }
-                newsXml = "";
+                newsXml = new StringBuilder();
                 continue;
             }
             cnt++;
@@ -78,5 +78,41 @@ public class SogouNewsParser {
         }
         conn.readNewsCount();
         conn.closeDatabase();
+    }
+
+    public static void main(String[] args) throws Exception {
+        SogouNewsParser parser = new SogouNewsParser();
+
+        FileWriter fw = new FileWriter("output_all.txt");
+
+        // 可以先使用小数据集 news_smarty.xml 测试
+        FileInputStream fis = new FileInputStream("news.dat");
+        BufferedReader br = new BufferedReader(new InputStreamReader(fis));
+        String strLine;
+        StringBuilder newsXml = new StringBuilder();
+        int cnt = 0;
+        int totalNum = 0;
+        while ((strLine = br.readLine()) != null) {
+            newsXml.append(strLine).append("\n");
+            if (cnt == 5) {
+                cnt = 0;
+                try {
+                    Map<String, String> news = parser.parseNews(newsXml.toString().replaceAll("&", "&amp;"));
+                    if(news != null) {
+                        fw.write(news.get("title") + "\t" + news.get("url") + "\t" + news.get("docno") + "\t" + news.get("content") + "\n");
+                    }
+                } catch (Exception e) {
+                    System.out.println("插入失败。");
+                }
+                newsXml = new StringBuilder();
+                continue;
+            }
+            cnt++;
+            totalNum ++;
+            if(totalNum % 5000 == 0) {
+                System.out.println(totalNum);
+            }
+        }
+        fw.close();
     }
 }

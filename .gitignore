@@ -4,3 +4,4 @@ news.dat
 output_all.txt
 *.iml
 *.txt
+.DS_Store

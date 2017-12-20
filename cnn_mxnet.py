@@ -60,7 +60,7 @@ class TCNNConfig(object):
     vocab_size = 8000  # most common words
 
     num_filters = 100  # number of the convolution filters (feature maps)
-    kernel_sizes = [3, 4, 5]   # three kinds of kernels (windows)
+    kernel_sizes = [3, 4, 5]  # three kinds of kernels (windows)
 
     dropout_prob = 0.5  # dropout rate
     learning_rate = 1e-3  # learning rate
@@ -76,6 +76,7 @@ class Conv_Max_Pooling(nn.Block):
     """
     Integration of Conv1D and GlobalMaxPool1D layers
     """
+
     def __init__(self, channels, kernel_size, **kwargs):
         super(Conv_Max_Pooling, self).__init__(**kwargs)
 
@@ -92,6 +93,7 @@ class TextCNN(nn.Block):
     """
     CNN text classification model, based on the paper.
     """
+
     def __init__(self, config, **kwargs):
         super(TextCNN, self).__init__(**kwargs)
 
@@ -110,10 +112,10 @@ class TextCNN(nn.Block):
             self.conv2 = Conv_Max_Pooling(Nf, Ks[1])
             self.conv3 = Conv_Max_Pooling(Nf, Ks[2])
             self.dropout = nn.Dropout(Dr)  # a dropout layer
-            self.fc1 = nn.Dense(C)         # a dense layer for classification
+            self.fc1 = nn.Dense(C)  # a dense layer for classification
 
     def forward(self, x):
-        x = self.embedding(x).transpose((0, 2, 1))   # Conv1D takes in NCW as input
+        x = self.embedding(x).transpose((0, 2, 1))  # Conv1D takes in NCW as input
         o1, o2, o3 = self.conv1(x), self.conv2(x), self.conv3(x)
         outputs = self.fc1(self.dropout(nd.concat(o1, o2, o3)))
 
@@ -133,6 +135,7 @@ class MRDataset(Dataset):
     """
     An implementation of the Abstracted gluon.data.Dataset, used for loading data in batch
     """
+
     def __init__(self, x, y):
         super(MRDataset, self).__init__()
         self.x = x
@@ -155,7 +158,7 @@ def evaluate(data_iterator, data_len, net, loss, ctx):
     for data, label in data_iterator:
         data, label = data.as_in_context(ctx), label.as_in_context(ctx)
 
-        with autograd.record(train_mode=False): # set the training_mode to False
+        with autograd.record(train_mode=False):  # set the training_mode to False
             output = net(data)
             losses = loss(output, label)
 
@@ -196,7 +199,7 @@ def train():
         for data, label in train_loader:
             data, label = data.as_in_context(ctx), label.as_in_context(ctx)
 
-            with autograd.record(train_mode=True):   # set the model in training mode
+            with autograd.record(train_mode=True):  # set the model in training mode
                 output = model(data)
                 losses = loss(output, label)
 
@@ -221,7 +224,7 @@ def train():
               + "Test_loss: {3:>6.2}, Test_acc {4:>6.2%}, Time: {5} {6}"
         print(msg.format(epoch + 1, train_loss, train_acc, test_loss, test_acc, time_dif, improved_str))
 
-    test(model, test_loader, len(corpus.x_test) ,ctx)
+    test(model, test_loader, len(corpus.x_test), ctx)
 
 
 def test(model, test_loader, test_len, ctx):
@@ -235,7 +238,7 @@ def test(model, test_loader, test_len, ctx):
     y_pred, y_true = [], []
     for data, label in test_loader:
         data, label = data.as_in_context(ctx), label.as_in_context(ctx)
-        with autograd.record(train_mode=False): # set the training_mode to False
+        with autograd.record(train_mode=False):  # set the training_mode to False
             output = model(data)
         pred = nd.argmax(output, axis=1).asnumpy().tolist()
         y_pred.extend(pred)

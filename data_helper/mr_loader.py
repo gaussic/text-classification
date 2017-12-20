@@ -6,6 +6,7 @@ import numpy as np
 import re
 import os
 
+
 def open_file(filename, mode='r'):
     """
     Commonly used file reader and writer, change this to switch between python2 and python3.

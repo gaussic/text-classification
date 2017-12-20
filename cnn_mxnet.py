@@ -11,9 +11,9 @@ The implementation is based on MXNET/Gluon API.
 
 We didn't implement cross validation,
 but simply run `python cnn_mxnet.py` for multiple times,
-the average accuracy is close to 76%.
+the average accuracy is close to 78%.
 
-It tooks about 2 minutes for training 20 epochs on a GTX 970 GPU.
+It takes about 2 minutes for training 20 epochs on a GTX 970 GPU.
 """
 
 import mxnet as mx
@@ -38,7 +38,7 @@ vocab_file = os.path.join(base_dir, 'rt-polarity.vocab.txt')
 save_path = 'checkpoints'  # model save path
 if not os.path.exists(save_path):
     os.mkdir(save_path)
-model_file = os.path.join(save_path, 'mr_cnn.params')
+model_file = os.path.join(save_path, 'mr_cnn_mxnet.params')
 
 
 def try_gpu():
@@ -148,18 +148,18 @@ class MRDataset(Dataset):
         return len(self.x)
 
 
-def evaluate(data_iterator, data_len, net, loss, ctx):
+def evaluate(data_loader, data_len, model, loss, ctx):
     """
     Evaluation, return accuracy and loss
     """
     total_loss = 0.0
     acc = metric.Accuracy()
 
-    for data, label in data_iterator:
+    for data, label in data_loader:
         data, label = data.as_in_context(ctx), label.as_in_context(ctx)
 
         with autograd.record(train_mode=False):  # set the training_mode to False
-            output = net(data)
+            output = model(data)
             losses = loss(output, label)
 
         total_loss += nd.sum(losses).asscalar()
@@ -186,6 +186,7 @@ def train():
     print("Initializing weights on", ctx)
     print(model)
 
+    # optimizer and loss function
     loss = gluon.loss.SoftmaxCrossEntropyLoss()
     trainer = gluon.Trainer(model.collect_params(), 'adam', {'learning_rate': config.learning_rate})
 
@@ -224,16 +225,16 @@ def train():
               + "Test_loss: {3:>6.2}, Test_acc {4:>6.2%}, Time: {5} {6}"
         print(msg.format(epoch + 1, train_loss, train_acc, test_loss, test_acc, time_dif, improved_str))
 
-    test(model, test_loader, len(corpus.x_test), ctx)
+    test(model, test_loader, ctx)
 
 
-def test(model, test_loader, test_len, ctx):
+def test(model, test_loader, ctx):
     """
     Test the model on test dataset.
     """
     print("Testing...")
     start_time = time.time()
-    model.load_params(model_file, ctx=ctx)
+    model.load_params(model_file, ctx=ctx)   # restore the best parameters
 
     y_pred, y_true = [], []
     for data, label in test_loader:

@@ -66,7 +66,7 @@ def read_vocab(vocab_file):
 
 def process_text(text, word_to_id, max_length, clean=True):
     """tokenizing and padding"""
-    if clean: # if the data needs to be cleaned
+    if clean:  # if the data needs to be cleaned
         text = clean_str(text)
     text = text.split()
 
@@ -80,12 +80,13 @@ class Corpus(object):
     """
     Preprocessing training data.
     """
+
     def __init__(self, pos_file, neg_file, vocab_file, dev_split=0.1, max_length=50, vocab_size=8000):
         # loading data
         pos_examples = [clean_str(s.strip()) for s in open_file(pos_file)]
         neg_examples = [clean_str(s.strip()) for s in open_file(neg_file)]
         x_data = pos_examples + neg_examples
-        y_data = [0.] * len(pos_examples) + [1.] * len(neg_examples) # 0 for pos and 1 for neg
+        y_data = [0.] * len(pos_examples) + [1.] * len(neg_examples)  # 0 for pos and 1 for neg
 
         if not os.path.exists(vocab_file):
             build_vocab(x_data, vocab_file, vocab_size)

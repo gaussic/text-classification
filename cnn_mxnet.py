@@ -51,27 +51,6 @@ def try_gpu():
     return ctx
 
 
-class Config(object):
-    """
-    CNN parameters
-    """
-    embedding_dim = 128  # embedding vector size
-    seq_length = 50  # maximum length of sequence
-    vocab_size = 8000  # most common words
-
-    num_filters = 100  # number of the convolution filters (feature maps)
-    kernel_sizes = [3, 4, 5]   # three kinds of kernels (windows)
-
-    dropout_prob = 0.5  # dropout rate
-    learning_rate = 1e-3  # learning rate
-    batch_size = 50  # batch size for training
-    num_epochs = 3  # total number of epochs
-
-    num_classes = 2  # number of classes
-
-    dev_split = 0.1  # percentage of dev data
-
-
 class TCNNConfig(object):
     """
     CNN parameters
@@ -86,7 +65,7 @@ class TCNNConfig(object):
     dropout_prob = 0.5  # dropout rate
     learning_rate = 1e-3  # learning rate
     batch_size = 50  # batch size for training
-    num_epochs = 20  # total number of epochs
+    num_epochs = 10  # total number of epochs
 
     num_classes = 2  # number of classes
 
@@ -192,7 +171,7 @@ def train():
     """
     print("Loading data...")
     start_time = time.time()
-    config = Config()
+    config = TCNNConfig()
     corpus = Corpus(pos_file, neg_file, vocab_file, config.dev_split, config.seq_length, config.vocab_size)
     print(corpus)
     config.vocab_size = len(corpus.words)
@@ -242,10 +221,10 @@ def train():
               + "Test_loss: {3:>6.2}, Test_acc {4:>6.2%}, Time: {5} {6}"
         print(msg.format(epoch + 1, train_loss, train_acc, test_loss, test_acc, time_dif, improved_str))
 
-    test(model, test_loader, ctx)
+    test(model, test_loader, len(corpus.x_test) ,ctx)
 
 
-def test(model, test_loader, ctx):
+def test(model, test_loader, test_len, ctx):
     """
     Test the model on test dataset.
     """
@@ -262,6 +241,9 @@ def test(model, test_loader, ctx):
         y_pred.extend(pred)
         y_true.extend(label.asnumpy().tolist())
 
+    test_acc = metrics.accuracy_score(y_true, y_pred)
+    test_f1 = metrics.f1_score(y_true, y_pred, average='macro')
+    print("Test accuracy: {0:>7.2%}, F1-Score: {1:>7.2%}".format(test_acc, test_f1))
 
     print("Precision, Recall and F1-Score...")
     print(metrics.classification_report(y_true, y_pred, target_names=['POS', 'NEG']))
@@ -275,7 +257,7 @@ def test(model, test_loader, ctx):
 
 def predict(text):
     # load config and vocabulary
-    config = Config()
+    config = TCNNConfig()
     _, word_to_id = read_vocab(vocab_file)
     labels = ['POS', 'NEG']
 

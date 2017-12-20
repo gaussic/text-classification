@@ -282,5 +282,5 @@ def predict(text):
 
 if __name__ == '__main__':
     train()
-    predict('this film is awesome')
-    predict('this film is so bad')
+    print(predict('this film is great'))
+    print(predict('this film is so bad'))

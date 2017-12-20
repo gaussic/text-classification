@@ -61,7 +61,7 @@ class TCNNConfig(object):
     dropout_prob = 0.5  # how much probability to be dropped
     learning_rate = 1e-3  # learning rate
     batch_size = 50  # batch size for training
-    num_epochs = 2  # total number of epochs
+    num_epochs = 20  # total number of epochs
 
     num_classes = 2  # number of classes
 
@@ -163,7 +163,7 @@ def train():
         model.cuda()
 
     # optimizer and loss function
-    criterion = nn.CrossEntropyLoss()
+    criterion = nn.CrossEntropyLoss(size_average=False)
     optimizer = optim.Adam(model.parameters(), lr=config.learning_rate)
 
     # set the mode to train
@@ -271,5 +271,5 @@ def predict(text):
 
 if __name__ == '__main__':
     train()
-    predict('this film is awesome')
-    predict('this film is so bad')
+    print(predict('this film is awesome'))
+    print(predict('this film is so bad'))

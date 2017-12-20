@@ -63,9 +63,12 @@ def read_vocab(vocab_file):
     return words, word_to_id
 
 
-def process_text(text, word_to_id, max_length):
+def process_text(text, word_to_id, max_length, clean=True):
     """tokenizing and padding"""
-    text = clean_str(text).split()
+    if clean: # if the data needs to be cleaned
+        text = clean_str(text)
+    text = text.split()
+    
     text = [word_to_id[x] for x in text if x in word_to_id]
     if len(text) < max_length:
         text = [0] * (max_length - len(text)) + text
@@ -81,7 +84,7 @@ class Corpus(object):
         pos_examples = [clean_str(s.strip()) for s in open_file(pos_file)]
         neg_examples = [clean_str(s.strip()) for s in open_file(neg_file)]
         x_data = pos_examples + neg_examples
-        y_data = [0.] * len(pos_examples) + [1.] * len(neg_examples)
+        y_data = [0.] * len(pos_examples) + [1.] * len(neg_examples) # 0 for pos and 1 for neg
 
         if not os.path.exists(vocab_file):
             build_vocab(x_data, vocab_file, vocab_size)
@@ -89,16 +92,18 @@ class Corpus(object):
         self.words, self.word_to_id = read_vocab(vocab_file)
 
         for i in range(len(x_data)):  # tokenizing and padding
-            x_data[i] = process_text(x_data[i], self.word_to_id, max_length)
+            x_data[i] = process_text(x_data[i], self.word_to_id, max_length, clean=False)
 
         x_data = np.array(x_data)
         y_data = np.array(y_data)
 
-        indices = np.random.permutation(np.arange(len(x_data)))  # shuffle
+        # shuffle
+        indices = np.random.permutation(np.arange(len(x_data)))
         x_data = x_data[indices]
         y_data = y_data[indices]
-
-        num_train = int((1 - dev_split) * len(x_data)) # train/dev split
+        
+        # train/dev split
+        num_train = int((1 - dev_split) * len(x_data))
         self.x_train = x_data[:num_train]
         self.y_train = y_data[:num_train]
         self.x_test = x_data[num_train:]

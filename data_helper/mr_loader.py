@@ -69,7 +69,7 @@ def process_text(text, word_to_id, max_length, clean=True):
     if clean: # if the data needs to be cleaned
         text = clean_str(text)
     text = text.split()
-    
+
     text = [word_to_id[x] for x in text if x in word_to_id]
     if len(text) < max_length:
         text = [0] * (max_length - len(text)) + text
@@ -102,7 +102,7 @@ class Corpus(object):
         indices = np.random.permutation(np.arange(len(x_data)))
         x_data = x_data[indices]
         y_data = y_data[indices]
-        
+
         # train/dev split
         num_train = int((1 - dev_split) * len(x_data))
         self.x_train = x_data[:num_train]

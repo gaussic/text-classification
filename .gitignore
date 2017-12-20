@@ -3,3 +3,4 @@
 *.xml
 .idea
 checkpoints
+__pycache__

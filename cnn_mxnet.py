@@ -170,7 +170,7 @@ def evaluate(data_iterator, data_len, net, loss, ctx):
     """
     Evaluation, return accuracy and loss
     """
-    total_loss = 0.0, 0
+    total_loss = 0.0
     acc = metric.Accuracy()
 
     for data, label in data_iterator:
@@ -183,9 +183,6 @@ def evaluate(data_iterator, data_len, net, loss, ctx):
         total_loss += nd.sum(losses).asscalar()
         predictions = nd.argmax(output, axis=1)
         acc.update(preds=predictions, labels=label)
-    print('data_len', data_len)
-    print('acc', acc.get()[1])
-    print('total_loss', total_loss / data_len)
     return acc.get()[1], total_loss / data_len
 
 
@@ -243,13 +240,6 @@ def train():
         time_dif = get_time_dif(start_time)
         msg = "Epoch {0:3}, Train_loss: {1:>7.2}, Train_acc {2:>6.2%}, " \
               + "Test_loss: {3:>6.2}, Test_acc {4:>6.2%}, Time: {5} {6}"
-        print(type(train_loss))
-        print(train_loss)
-        print(type(train_acc))
-        print(type(test_loss))
-        print(test_loss)
-        print(type(test_acc))
-
         print(msg.format(epoch + 1, train_loss, train_acc, test_loss, test_acc, time_dif, improved_str))
 
     test(model, test_loader, ctx)
@@ -269,8 +259,9 @@ def test(model, test_loader, ctx):
         with autograd.record(train_mode=False): # set the training_mode to False
             output = model(data)
         pred = nd.argmax(output, axis=1).asnumpy().tolist()
-        y_pred.append(pred)
-        y_true.append(label.asnumpy().tolist())
+        y_pred.extend(pred)
+        y_true.extend(label.asnumpy().tolist())
+
 
     print("Precision, Recall and F1-Score...")
     print(metrics.classification_report(y_true, y_pred, target_names=['POS', 'NEG']))

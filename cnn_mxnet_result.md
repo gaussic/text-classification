@@ -1,7 +1,7 @@
 The MXNet implementation of CNN_sentence reached 79% of test accuracy after 3 epochs.
 
 
-```python
+```bash
 Loading data...
 Training: 9595, Testing: 1067, Vocabulary: 8000
 Configuring CNN model...

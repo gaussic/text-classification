@@ -1,4 +1,4 @@
-# CNN for sentence classi
+# CNN for sentence classification
 
 This example demonstrates the use of Conv1D for CNN text classification. Original paper could be found at: https://arxiv.org/abs/1408.5882
 
